@@ -20,7 +20,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.config   import ConfigTools
 from tools.compare  import compare_dictionaries
 

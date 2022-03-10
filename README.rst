@@ -71,9 +71,9 @@ Load the required keywords in the test case :
 .. code:: robotframework
 
     *** Settings ***
-    Library         ./keywords/terraform.py
-    Library         ./keywords/keepass.py
-    Library         ./keywords/<keyword>.py
+    Library         technogix_iac_keywords.terraform
+    Library         technogix_iac_keywords.keepass
+    Library         technogix_iac_keywords.<keyword>
     # Load other keywords, for example the one provided your expected infrastructure description
     Library         ./data.py
 
@@ -157,9 +157,6 @@ Issues
 .. image:: https://img.shields.io/github/issues-closed/technogix-terraform/robotframework.svg
    :target: https://github.com/technogix-terraform/robotframework/issues
    :alt: Closed issues
-.. image:: https://snyk.io/test/github/technogix-terraform/robotframework/badge.svg
-   :target: https://github.com/technogix-terraform/robotframework/security/code-scanning
-   :alt: Known Vulnerabilities
 
 Known limitations
 =================

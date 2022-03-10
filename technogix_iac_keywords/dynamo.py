@@ -21,7 +21,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.dynamo import DynamoDBTools
 from tools.compare import remove_type_from_list, compare_dictionaries
 
@@ -58,7 +58,7 @@ def dynamodb_item_shall_exist(table, item) :
         item    (str) : Item to look for
     """
 
-    result = DYNAMODB_TOOLS.object_exists(table, item)
+    result = DYNAMODB_TOOLS.item_exists(table, item)
     if not result : raise AssertionError(f"'{item}' should exist.")
 
 
@@ -69,7 +69,7 @@ def dynamodb_item_shall_not_exist(table, item) :
         table   (str) : Table to check
         item    (str) : Item to look for
     """
-    result = DYNAMODB_TOOLS.object_exists(table, item)
+    result = DYNAMODB_TOOLS.item_exists(table, item)
     if result : raise AssertionError(f"'{item}' should not exist.")
 
 @keyword("Remove DynamoDB Item")

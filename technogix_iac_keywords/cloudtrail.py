@@ -22,7 +22,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.cloudtrail import CloudtrailTools
 from tools.s3         import S3Tools
 from tools.cloudwatch import CloudwatchTools
@@ -130,7 +130,7 @@ def bucket_access_shall_be_logged(account) :
     result = CLOUDTRAIL_TOOLS.list_trails()
     for trail in result :
         logging = CLOUDTRAIL_S3_TOOLS.get_logging(trail['S3BucketName'], account)
-        if not 'TargetBucket' in logging :
+        if 'TargetBucket' not in logging :
             raise Exception('Logging is not enabled for bucket ' + trail['S3BucketName'])
 
 @keyword("Cloudtrail Logs Shall Be Encrypted")

@@ -22,7 +22,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.terraform       import TerraformTools
 
 # Global variable

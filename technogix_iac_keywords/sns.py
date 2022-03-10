@@ -21,7 +21,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.sns       import SNSTools
 from tools.compare   import compare_dictionaries, remove_type_from_list
 

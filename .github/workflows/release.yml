@@ -44,7 +44,7 @@ jobs:
             - name: Run pip-audit to check for vulnerabilities
               uses: docker://technogix/terraform-python-awscli:v1.1.0
               with:
-                args: pip-audit requirements-test.txt
+                args: pip-audit -r requirements-test.txt
 
             - name: Upload snyk result to GitHub Code Scanning
               uses: github/codeql-action/upload-sarif@v1

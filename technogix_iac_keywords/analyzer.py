@@ -9,7 +9,7 @@
 # -------------------------------------------------------
 # Nadège LEMPERIERE, @17 october 2021
 # Latest revision: 17 october 2021
-# ---------------------------------------------------- """
+# --------------------------------------------------- """
 
 # System includes
 from os import path
@@ -21,15 +21,14 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-from tools.account import AccountTools
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
+from tools.analyzer import AnalyzerTools
 
 # Global variable
-ACCOUNT_TOOLS = AccountTools()
+ANALYZER_TOOLS = AnalyzerTools()
 
-
-@keyword("Initialize Account")
-def intialize_account(profile = None, access_key = None, secret_key = None, region = None) :
+@keyword("Initialize Analyzer")
+def intialize_analyzer(profile = None, access_key = None, secret_key = None, region = None) :
     """ Initialize keyword with AWS configuration
         Profile or access_key/secret_key shall be provided
         ---
@@ -38,16 +37,24 @@ def intialize_account(profile = None, access_key = None, secret_key = None, regi
         secret_key (str) : Secret key associated to the previous access key
         region     (str) : AWS region to use
     """
-    ACCOUNT_TOOLS.initialize(profile, access_key, secret_key, region)
+    ANALYZER_TOOLS.initialize(profile, access_key, secret_key, region)
     logger.info("Initialization performed")
 
-@keyword("Security Contact Shall Exist")
-def check_security_contact(mgt_account) :
+@keyword("One Access Analyzer Shall Exist Per Region")
+def one_analyzer_per_region(regions) :
     """ Check that an AWS account has security contact
         ---
-        mgt_account (str) : Account to check for security contact
+        regions (str) : List of region to test
     """
-    result = ACCOUNT_TOOLS.list_accounts()
-    for account in result :
-        test = ACCOUNT_TOOLS.get_security_contact(account['Id'], account['Id'] == mgt_account)
-        if len(test) == 0 : raise Exception("No security contact found")
+    results = {}
+    for region in regions :
+        results[region] = False
+
+    response = ANALYZER_TOOLS.list_analyzers()
+    for analyzer in response :
+        for region in regions :
+            if analyzer['arn'].find(':' + region + ':') >= 0 :
+                results[region] = True
+
+    for region in regions :
+        if not results[region] : raise Exception('Could not find analyzer for region ' + region)

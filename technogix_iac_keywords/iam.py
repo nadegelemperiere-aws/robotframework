@@ -21,7 +21,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.iam import IAMTools
 from tools.compare import compare_dictionaries, remove_type_from_list
 
@@ -197,7 +197,7 @@ def no_service_credentials() :
     for user in result :
         credentials = IAM_TOOLS.list_user_service_credentials(user)
         if len(credentials) > 0 :
-            name = credentials['ServiceName']
+            name = credentials[0]['ServiceName']
             raise Exception('User ' + user + ' has credentials for service ' + name)
 
 @keyword("Root Shall Not Have Been Used Since")

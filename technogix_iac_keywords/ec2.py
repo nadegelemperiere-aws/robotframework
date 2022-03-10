@@ -22,7 +22,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.ec2 import EC2Tools
 from tools.compare import compare_dictionaries, remove_type_from_dictionary, remove_type_from_list
 
@@ -236,23 +236,6 @@ def internet_gateway_shall_exist_and_match(specs) :
                 name = gateway['InternetGatewayId']
                 logger.info('Gateway ' + spec['name'] + ' matches gateway ' + name)
         if not found : raise Exception('Internet gateway ' + spec['name'] + ' does not match')
-
-
-@keyword('Route Shall Exist And Match')
-def route_shall_exist_and_match(specs) :
-    """ Check that a network route exists that matches the specifications
-        ---
-        specs    (list) : List of specifications to consider
-    """
-    result = EC2_TOOLS.list_routes()
-    for spec in specs :
-        found = False
-        for route in result :
-            if compare_dictionaries(spec['data'], route) :
-                found = True
-                name = route['InternetGatewayId']
-                logger.info('Route ' + spec['name'] + ' matches internet gateway ' + name)
-        if not found : raise Exception('Route ' + spec['name'] + ' does not match')
 
 @keyword('Endpoints Shall Exist And Match')
 def endpoints_shall_exist_and_match(specs) :

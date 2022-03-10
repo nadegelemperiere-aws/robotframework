@@ -21,7 +21,7 @@ from robot.api.deco import keyword
 ROBOT = False
 
 # Local includes
-syspath.append(path.normpath(path.join(path.dirname(__file__), '../')))
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.s3 import S3Tools
 from tools.compare import compare_dictionaries, remove_type_from_list
 
@@ -83,21 +83,23 @@ def can_get_s3_object(bucket) :
     if not result : raise Exception("S3 object can not be downloaded")
 
 @keyword("S3 Bucket Shall Exist")
-def s3_bucket_shall_exist(bucket) :
+def s3_bucket_shall_exist(bucket, account) :
     """ Tests if a bucket exist
         ---
         bucket   (str) : Bucket to look for
+        account  (str) : Account the bucket is in
     """
-    result = S3_TOOLS.bucket_exists(bucket)
+    result = S3_TOOLS.bucket_exists(bucket, account)
     if not result : raise Exception("Bucket " + bucket + " does not exist")
 
 @keyword("S3 Bucket Shall Not Exist")
-def s3_bucket_shall_not_exist(bucket) :
+def s3_bucket_shall_not_exist(bucket, account) :
     """ Check that a bucket does not exist
         ---
         bucket   (str) : Bucket to look for
+        account  (str) : Account the bucket is in
     """
-    result = S3_TOOLS.bucket_exists(bucket)
+    result = S3_TOOLS.bucket_exists(bucket, account)
     if result : raise Exception("Bucket " + bucket + " exists")
 
 @keyword("S3 Bucket Shall Be Accessible")
