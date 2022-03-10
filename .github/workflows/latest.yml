@@ -1,0 +1,51 @@
+# -------------------------------------------------------
+#!/bin/bash
+# -------------------------------------------------------
+# TECHNOGIX
+# -------------------------------------------------------
+# Copyright (c) [2022] Technogix SARL
+# All rights reserved
+# -------------------------------------------------------
+# Latest pipeline for robotframework keywords
+# -------------------------------------------------------
+# Nadège LEMPERIERE, @01 march 2022
+# Latest revision: 01 march 2022
+# -------------------------------------------------------
+
+name: Robotframewok Keywords Check Pipeline
+
+on:
+    push:
+        branches:
+            - '**'
+
+jobs:
+
+    check:
+        name: Analyze Package
+        runs-on: ubuntu-latest
+        container: technogix/terraform-python-awscli:v1.1.0
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+
+            - name: Linting module
+              run: pylint keywords tools
+
+            - name: Run Snyk to check for vulnerabilities
+              continue-on-error: true
+              uses: snyk/actions/python@master
+              env:
+                SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+              with:
+                args: --sarif-file-output=snyk.sarif
+
+            - name: Run pip-audit to check for vulnerabilities
+              continue-on-error: true
+              run: pip-audit requirements-test.txt
+
+            - name: Upload snyk result to GitHub Code Scanning
+              uses: github/codeql-action/upload-sarif@v1
+              if: always()
+              with:
+                sarif_file: snyk.sarif
