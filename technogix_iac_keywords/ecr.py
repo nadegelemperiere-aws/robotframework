@@ -14,6 +14,7 @@
 from sys import path as syspath
 from os import path
 from datetime import datetime
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -52,6 +53,7 @@ def repositories_shall_exist_and_match(specs) :
     for spec in specs :
         found = False
         for repository in result :
+            print(dumps(repository))
             if compare_dictionaries(spec['data'], repository) :
                 found = True
                 logger.info('Repository ' + spec['name'] + \

@@ -28,7 +28,7 @@ def compare_dictionaries(spec, test) :
 
     result = True
 
-    if isinstance(test,dict) :
+    if not isinstance(test,dict) :
         result = False
         logger.debug('Dictionary ' + dumps(spec) + \
             ' is compared to something that is not a dictionary')
@@ -67,7 +67,7 @@ def compare_list(spec, test) :
 
     result = True
 
-    if isinstance(test,list) :
+    if not isinstance(test,list) :
         result = False
         logger.debug('List ' + dumps(spec) + ' is compared to something that is not a list')
 
@@ -118,7 +118,8 @@ def remove_type_from_dictionary(input_dict, input_type) :
             result[key] = remove_type_from_dictionary(input_dict[key], input_type)
         elif isinstance(input_dict[key], list) :
             result[key] = remove_type_from_list(input_dict[key], input_type)
-        else : result[key] = input_dict[key]
+        else :
+            result[key] = input_dict[key]
 
     return result
 
@@ -135,10 +136,11 @@ def remove_type_from_list(input_list, input_type) :
         if isinstance(item, input_type) :
             logger.debug('Removing element from list')
         elif isinstance(item, dict) :
-            result.append(remove_type_from_dictionary(item, type))
+            result.append(remove_type_from_dictionary(item, input_type))
         elif isinstance(item, list) :
-            result.append(remove_type_from_list(item, type))
-        else : result.append(item)
+            result.append(remove_type_from_list(item, input_type))
+        else :
+            result.append(item)
 
 
     return result
