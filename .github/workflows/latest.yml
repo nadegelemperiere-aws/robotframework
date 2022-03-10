@@ -32,20 +32,20 @@ jobs:
             - name: Installing dependencies
               uses: docker://technogix/terraform-python-awscli:v1.1.0
               with:
-                args: pip install --target ${{github.workspace}}/site-packages -r requirements-test.txt
+                args: pip install --target /github/workspace/site-packages -r requirements-test.txt
 
             - name: Linting module
               continue-on-error: true
               uses: docker://technogix/terraform-python-awscli:v1.1.0
               with:
-                args: pylint keywords tools
+                args: ls -l /github/
 
             - name: Run Snyk to check for vulnerabilities
               continue-on-error: true
               uses: snyk/actions/python@master
               env:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-                PYTHONPATH: ${{github.workspace}}/site-packages
+                PYTHONPATH: /github/workspace/site-packages
               with:
                 args: --sarif-file-output=snyk.sarif --file=setup.py
 
