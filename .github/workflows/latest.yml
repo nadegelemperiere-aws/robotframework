@@ -32,7 +32,7 @@ jobs:
             - name: Installing dependencies
               uses: docker://technogix/terraform-python-awscli:v1.1.0
               with:
-                args: pip install -r requirements.txt
+                args: pip install -r requirements-test.txt
 
             - name: Linting module
               continue-on-error: true
