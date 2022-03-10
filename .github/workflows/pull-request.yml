@@ -1,117 +1,51 @@
-""" -----------------------------------------------------
+# -------------------------------------------------------
+#!/bin/bash
+# -------------------------------------------------------
 # TECHNOGIX
 # -------------------------------------------------------
 # Copyright (c) [2022] Technogix SARL
 # All rights reserved
 # -------------------------------------------------------
-# Latest pipeline for robotframework keywords
+# Pull request pipeline for robotframework keywords
 # -------------------------------------------------------
 # Nadège LEMPERIERE, @01 march 2022
 # Latest revision: 01 march 2022
 # -------------------------------------------------------
 
-name: Robotframewok Keywords Check Pipeline
+name: Keywords Pull Request Pipeline
 
-on: push
+on:
+    pull_request:
+        types: [ assigned, opened, synchronize, reopened ]
 
 jobs:
 
-    build:
-        name: Build Website
+    check:
+        name: Analyze Package
         runs-on: ubuntu-latest
-        container: node:alpine
         steps:
             - name: Checkout code
               uses: actions/checkout@master
 
-            - name: Installing dependencies
-              run: npm install
-
-            - name: Linting code
-              continue-on-error: true
-              run: npm run lint
+            - name: Linting module
+              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              with:
+                args: pylint keywords tools
 
             - name: Run Snyk to check for vulnerabilities
-              continue-on-error: true
-              uses: snyk/actions/node@master
+              uses: snyk/actions/python@master
               env:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
               with:
                 args: --sarif-file-output=snyk.sarif
 
-            - name: Upload result to GitHub Code Scanning
+            - name: Run pip-audit to check for vulnerabilities
+              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              with:
+                args: pip-audit requirements-test.txt
+
+            - name: Upload snyk result to GitHub Code Scanning
               uses: github/codeql-action/upload-sarif@v1
               if: always()
               with:
                 sarif_file: snyk.sarif
-
-    test:
-        name: Testing Website
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@master
-
-            - name: Installing dependencies
-              uses: docker://node:alpine
-              with:
-                args: npm install
-
-            - name: Lauching tests
-              continue-on-error: true
-              uses: docker://node:alpine
-              with:
-                args: npm test
-
-            - name: Upload coverage to Codecov
-              uses: codecov/codecov-action@v2
-              with:
-                token: ${{ secrets.CODECOV_TOKEN }}
-                files: clover.xml, coverage-final.json,lcov.info
-                directory: ./coverage/
-                name: codecov-website
-                fail_ci_if_error: true
-                verbose: true
-                commit_parent: ${{ github.sha }}
-
-    package:
-        name: Package Website
-        runs-on: ubuntu-latest
-        needs: [build, test]
-        env:
-            dockerhub_user: ${{ secrets.DOCKERHUB_USER }}
-            dockerhub_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@master
-
-            - name: Check dockerfile
-              continue-on-error: true
-              uses: hadolint/hadolint-action@v1.6.0
-              with:
-                dockerfile: Dockerfile
-
-            - name: Build container
-              run: docker image build -t technogix/website:${{ github.sha }} .
-
-            - name: Check container
-              continue-on-error: true
-              uses: aquasecurity/trivy-action@master
-              with:
-                image-ref: 'technogix/website:${{ github.sha }}'
-                format: 'sarif'
-                output: trivy.sarif
-                exit-code: '0'
-                ignore-unfixed: true
-
-            - name: Upload result to GitHub Code Scanning
-              uses: github/codeql-action/upload-sarif@v1
-              if: always()
-              with:
-                sarif_file: trivy.sarif
-
-            - name: Login to dockerhub registry
-              run: echo ${dockerhub_password} | docker login -u ${dockerhub_user} --password-stdin
-
-            - name: Publish container
-              run: docker image push technogix/website:${{ github.sha }}
