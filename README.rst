@@ -9,9 +9,18 @@ About The Project
 
 This project provides a set of robotframework keywords used to check the results of terraform deployments.
 
-.. image:: https://github.com/technogix-terraform/robotframework/actions/workflows/latest.yml/badge.svg
-   :target: https://github.com/technogix-terraform/robotframework/actions/workflows/latest.yml
+.. image:: https://badgen.net/github/checks/technogix-terraform/robotframework
+   :target: https://github.com/technogix-terraform/robotframework/actions/workflows/release.yml
    :alt: Status
+.. image:: https://img.shields.io/static/v1?label=license&message=MIT&color=informational
+   :target: ./LICENSE
+   :alt: License
+.. image:: https://badgen.net/github/commits/technogix-terraform/robotframework/main
+   :target: https://github.com/technogix-terraform/robotframework
+   :alt: Commits
+.. image:: https://badgen.net/github/last-commit/technogix-terraform/robotframework/main
+   :target: https://github.com/technogix-terraform/robotframework
+   :alt: Last commit
 
 Built With
 ----------
@@ -27,8 +36,11 @@ Principle
 =========
 
 The keywords provided here enables to build easily a set of tests for terraform deployments and/or module. The global principle is the following :
+
 * You've got to have an infrastructure that is up and running. In case you are testing a module, the *terraform* keyword will provide tools to easily set up test infrastructure for the test and remove it once the test is done.
+
 * We provide keywords relying on boto3 to retrieve the infrastructure configuration and test that it matches your expectations.
+
 * Keywords can be logical keywords, that test a simple or complex condition on the infrastructure, such as *Does the bucket exist* or *Does it allow public access* or it can be a comparison keyword that compare the infrastructure to a set of requirements you describe as a dictionary.
 
 One of the key complexity to dealing with secured infrastructure is to provide the test with the adequate credentials. We use keepass as a vault because it enables us to share credentials between a lot of application, to manage our secrets configuration, and it provided an ergonomic HMI to manage secrets. The *keepass* keyword also ease the use of a keepass database for the testing.
@@ -44,8 +56,11 @@ Examples
 ========
 
 The following steps enables to build a robotframework test case using the provided keywords. This deployment tests a terraform module by :
+
 * Building a test deployment using the module
+
 * Testing the resulting infrastructure by comparing it to a target requirement
+
 * Remove the deployment
 
 Loading keywords
@@ -54,6 +69,7 @@ Loading keywords
 Load the required keywords in the test case :
 
 .. code:: robotframework
+
     *** Settings ***
     Library         ./keywords/terraform.py
     Library         ./keywords/keepass.py
@@ -67,6 +83,7 @@ Declaring tests case parameters
 Set up the global variables that will be useful all along the tests. They can be constants, or can be provided by the robotframework command line with the syntax --variable variablename:variable_value
 
 .. code:: robotframework
+
     *** Variables ***
     # From the command line
     ${KEEPASS_DATABASE}                 ${vaultdatabase}
@@ -83,6 +100,7 @@ Preparing environment
 Prepare environment for all test by retreiving secrets, initializing keywords with credentials, configure deployment
 
 .. code:: robotframework
+
     *** Test Cases ***
     Prepare Environment
         [Documentation]         Retrieve privileged credential from database and initialize python tests keywords
@@ -107,6 +125,7 @@ Perform the test by deploying infrastructure, retrieve terraform test, load expe
 
 
 .. code:: robotframework
+
     Test Infrastructure
         [Documentation]         Launch Test Deployment And Check That The AWS Infrastructure Match Specifications
     # Build a .tfvars file containing the variables described in ${TF_PARAMETERS} directory and launch the terraform deployment described in ${DEPLOYMENT_DIR}
@@ -126,6 +145,7 @@ Organization
 ============
 
 * The *keyword* directory contains the robotframework keywords associated to each infrastructure service. They are built to be easily understandable and modifiable, and use by a wide community.
+
 * The *tools* directory contains the python functions on which the keywords rely to fulfill their missions. They can be more complex.
 
 Issues
