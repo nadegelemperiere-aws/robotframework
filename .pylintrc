@@ -1,0 +1,2 @@
+[MESSAGES CONTROL]
+disable=import-error, wrong-import-position, multiple-statements, broad-except, invalid-name, duplicate-code
