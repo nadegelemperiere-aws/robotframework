@@ -30,13 +30,13 @@ jobs:
               uses: actions/checkout@master
 
             - name: Installing dependencies
-              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
               with:
                 args: pip install -r requirements-test.txt --target site-packages
 
             - name: Linting module
               continue-on-error: true
-              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
               with:
                 args: pylint keywords tools
 
@@ -51,7 +51,7 @@ jobs:
 
             - name: Run pip-audit to check for vulnerabilities
               continue-on-error: true
-              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
               with:
                 args: pip-audit -r requirements-test.txt
 
