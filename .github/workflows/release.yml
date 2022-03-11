@@ -24,27 +24,33 @@ jobs:
     check:
         name: Analyze Package
         runs-on: ubuntu-latest
-        container: technogix/terraform-python-awscli:v1.1.0
+        container:
         steps:
             - name: Checkout code
               uses: actions/checkout@master
 
-            - name: Linting module
-              uses: docker://technogix/terraform-python-awscli:v1.1.0
+            - name: Installing dependencies
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
               with:
-                args: pylint keywords tools
+                args: pip install -r requirements-test.txt --target site-packages
+
+            - name: Linting module
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
+              with:
+                args: pylint technogix_iac_keywords
 
             - name: Run Snyk to check for vulnerabilities
               uses: snyk/actions/python@master
               env:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+                PYTHONPATH: /github/workspace/site-packages
               with:
-                args: --sarif-file-output=snyk.sarif
+                args: --sarif-file-output=snyk.sarif --file=setup.py
 
             - name: Run pip-audit to check for vulnerabilities
-              uses: docker://technogix/terraform-python-awscli:v1.1.0
+              uses: docker://technogix/terraform-python-awscli:v2.0.0
               with:
-                args: pip-audit -r requirements-test.txt
+                args: pip-audit -r requirements-test.txt --format json
 
             - name: Upload snyk result to GitHub Code Scanning
               uses: github/codeql-action/upload-sarif@v1
