@@ -10,6 +10,9 @@
 # Latest revision: 05 october 2021
 # --------------------------------------------------- """
 
+# System includes
+from os import path
+
 # Pykeepass includes
 from pykeepass import PyKeePass
 
@@ -34,7 +37,12 @@ def load_database_secret(database, key, entry, attribute) :
     if entry[-1] == '/' : entry = entry[:-1]
     entry_list = entry.split('/')
     try :
-        kps = PyKeePass(database, keyfile=key)
+
+        if path.isfile(key) :
+            kps = PyKeePass(database, keyfile=key)
+        else :
+            kps = PyKeePass(database, password=key)
+
         search = kps.find_entries_by_path(entry_list)
         if search is None : logger.error('Entry ' + entry + ' not found')
         else: result = getattr(search,attribute)

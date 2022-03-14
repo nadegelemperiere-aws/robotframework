@@ -1,4 +1,5 @@
 .. image:: docs/imgs/logo.png
+   :alt: Logo
 
 ===========================================
 Technogix terraform robotframework keywords
