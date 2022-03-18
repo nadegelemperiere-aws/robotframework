@@ -68,3 +68,42 @@ def key_shall_exist_and_match(specs) :
             if compare_dictionaries(spec['data'], key) :
                 found = True
         if not found : raise Exception('Key ' + spec['name'] + ' does not match')
+
+@keyword('Enabled Key Shall Be Limited')
+def enabled_keys_shall_be_limited(maximal_number) :
+    """ Check that active keys are limited
+        ---
+        maximal_number    (list) : Maximal number of allowed key
+    """
+    number = 0
+    result = KMS_TOOLS.list_keys()
+    result = remove_type_from_list(result, datetime)
+    for key in result :
+        if key['KeyState'] == 'Enabled' and key['KeyManager'] != 'AWS':
+            number = number + 1
+            logger.debug(dumps(key))
+
+    if number > int(maximal_number) :
+        raise Exception(str(number) + ' keys found instead of ' + str(maximal_number))
+
+@keyword('No Key In Regions')
+def no_key_in_regions(regions, access_key, secret_key) :
+    """ Check that no resource exists in provided regions
+        ---
+        resions    (list) : List of regions not allowed for hosting
+        access_key (str)  : Access key for IAM users authentication in aws
+        secret_key (str)  : Secret key associated to the previous access key
+    """
+    logger.info(dumps(regions))
+    local_tools = KMSTools()
+    for region in regions :
+        local_tools.initialize(None, access_key, secret_key, region = region)
+        keys = local_tools.list_keys()
+        keys = remove_type_from_list(keys,datetime)
+        for key in keys :
+            if key['KeyManager'] != 'AWS' :
+                if (region != 'eu-west-3' or key['KeyState'] == 'Enabled') :
+                    # Exception for eu-west-3, I tried some testing in it, and
+                    # therefore there are remaining keys waiting for deletion
+                    raise Exception('Found key ' + dumps(key) + \
+                        ' in region ' + region)

@@ -14,6 +14,7 @@
 from sys import path as syspath
 from os import path
 from datetime import datetime
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -56,3 +57,18 @@ def directory_shall_exist_and_match(specs) :
                 found = True
                 logger.info('Directory ' + spec['name'] + ' matches directory ' + directory['Name'])
         if not found : raise Exception('Directory ' + spec['name'] + ' does not match')
+
+@keyword('No Directory In Regions')
+def no_directory_in_regions(regions, access_key, secret_key) :
+    """ Check that no resource exists in regions other than the ones provided
+        ---
+        resions    (list) : List of regions not allowed for hosting
+        access_key (str)  : Access key for IAM users authentication in aws
+        secret_key (str)  : Secret key associated to the previous access key
+    """
+    local_tools = DirectoryTools()
+    for region in regions :
+        local_tools.initialize(None, access_key, secret_key, region = region)
+        directories = local_tools.list_directories()
+        if len(directories) != 0 : raise Exception('Found key ' + dumps(directories[0]) + \
+            ' in region ' + region)

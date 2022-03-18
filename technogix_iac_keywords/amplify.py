@@ -4,8 +4,7 @@
 # Copyright (c) [2022] Technogix SARL
 # All rights reserved
 # -------------------------------------------------------
-# Keywords to manage aws account tasks
-# Requires AWS rights on account:*
+# Keywords to manage aws amplify tasks
 # -------------------------------------------------------
 # Nadège LEMPERIERE, @17 october 2021
 # Latest revision: 17 october 2021
@@ -14,6 +13,7 @@
 # System includes
 from os import path
 from sys import path as syspath
+from datetime import datetime
 
 # Robotframework includes
 from robot.api import logger
@@ -22,13 +22,14 @@ ROBOT = False
 
 # Local includes
 syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
-from tools.account import AccountTools
+from tools.amplify import AmplifyTools
+from tools.compare import compare_dictionaries, remove_type_from_list
 
 # Global variable
-ACCOUNT_TOOLS = AccountTools()
+AMPLIFY_TOOLS = AmplifyTools()
 
-@keyword("Initialize Account")
-def intialize_account(profile = None, access_key = None, secret_key = None, region = None) :
+@keyword("Initialize Amplify")
+def intialize_amplify(profile = None, access_key = None, secret_key = None, region = None) :
     """ Initialize keyword with AWS configuration
         Profile or access_key/secret_key shall be provided
         ---
@@ -37,16 +38,21 @@ def intialize_account(profile = None, access_key = None, secret_key = None, regi
         secret_key (str) : Secret key associated to the previous access key
         region     (str) : AWS region to use
     """
-    ACCOUNT_TOOLS.initialize(profile, access_key, secret_key, region)
+    AMPLIFY_TOOLS.initialize(profile, access_key, secret_key, region)
     logger.info("Initialization performed")
 
-@keyword("Security Contact Shall Exist")
-def check_security_contact(mgt_account) :
-    """ Check that an AWS account has security contact
+@keyword('Application Shall Exist And Match')
+def application_shall_exist_and_match(specs) :
+    """ Check that an amplify application exists that matches the specifications
         ---
-        mgt_account (str) : Account to check for security contact
+        specs    (list) : List of specifications to consider
     """
-    result = ACCOUNT_TOOLS.list_accounts()
-    for account in result :
-        test = ACCOUNT_TOOLS.get_security_contact(account['Id'], account['Id'] == mgt_account)
-        if len(test) == 0 : raise Exception("No security contact found")
+    result = AMPLIFY_TOOLS.list_applications()
+    result = remove_type_from_list(result, datetime)
+    for spec in specs :
+        found = False
+        for application in result :
+            if compare_dictionaries(spec['data'], application) :
+                found = True
+                logger.info('App ' + spec['name'] + ' matches app ' + application['name'])
+        if not found : raise Exception('Application ' + spec['name'] + ' does not match')

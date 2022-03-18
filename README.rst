@@ -183,7 +183,7 @@ This code is under MIT license
 Contact
 =======
 
-Nadege LEMPERIERE - nadege.lemperiere@technogix.io
+Technogix - contact.technogix@gmail.com
 
 Acknowledgments
 ===============

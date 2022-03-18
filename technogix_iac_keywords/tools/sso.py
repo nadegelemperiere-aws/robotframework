@@ -10,48 +10,28 @@
 # Latest revision: 05 october 2021
 # --------------------------------------------------- """
 
-# System includes
-from json import dumps
 
-# Aws includes
-from boto3 import Session
+# System includes
+from sys import path as syspath
+from os import path
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
 ROBOT = False
 
-class SSOTools :
+# Local include
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
+from tool import Tool
+
+class SSOTools(Tool) :
     """ Class providing tools to check AWS SSO compliance """
-
-    # SSO session
-    m_session = None
-
-    # SSO client
-    m_client = None
 
     def __init__(self):
         """ Constructor """
-        self.m_session = None
-        self.m_client = None
-
-    def initialize(self, profile, access_key, secret_key, region = None) :
-        """ Initialize session  from credentials
-            Profile or access_key/secret_key shall be provided
-            ---
-            profile    (str) : AWS cli profile for SSO users authentication in aws
-            access_key (str) : Access key for IAM users authentication in aws
-            secret_key (str) : Secret key associated to the previous access key
-            region     (str) : AWS region to use
-        """
-
-        if profile is not None :
-            self.m_session = Session(profile_name=profile, region_name = region)
-        elif access_key is not None and secret_key is not None :
-            self.m_session = Session(aws_access_key_id=access_key, \
-                aws_secret_access_key=secret_key, region_name = region)
-        else :
-            self.m_session = Session(region_name = region)
-        self.m_client = self.m_session.client('sso-admin')
+        super().__init__()
+        self.m_services.append('sso-admin')
+        self.m_is_global = True
 
     def list_permission_sets(self, instance) :
         """ List permission sets on a given instance
@@ -63,29 +43,32 @@ class SSOTools :
 
         result = []
 
-        shall_continue = True
-        marker = None
-        while shall_continue :
-            if marker is not None :
-                response = self.m_client.list_permission_sets(InstanceArn=instance, \
-                    NextToken = marker)
-            else :
-                response = self.m_client.list_permission_sets(InstanceArn=instance)
-            for arn in response['PermissionSets'] :
-                desc = self.m_client.describe_permission_set(InstanceArn=instance, \
-                    PermissionSetArn=arn)
-                policy = self.m_client.get_inline_policy_for_permission_set( InstanceArn=instance, \
-                    PermissionSetArn=arn)
-                tags = self.m_client.list_tags_for_resource(InstanceArn=instance, ResourceArn=arn)
-                data = desc['PermissionSet']
-                data['InlinePolicy'] = policy['InlinePolicy']
-                data['Tags'] = tags['Tags']
-                del data['CreatedDate']
-                result.append(data)
-            if 'NextToken' in response  : marker = response['NextToken']
-            else                        : shall_continue = False
+        if self.m_is_active['sso-admin'] :
+            shall_continue = True
+            marker = None
+            while shall_continue :
+                if marker is not None :
+                    response = self.m_clients['sso-admin'].list_permission_sets(\
+                        InstanceArn=instance, NextToken = marker)
+                else :
+                    response = self.m_clients['sso-admin'].list_permission_sets(\
+                        InstanceArn=instance)
+                for arn in response['PermissionSets'] :
+                    desc = self.m_clients['sso-admin'].describe_permission_set(\
+                        InstanceArn=instance, PermissionSetArn=arn)
+                    policy = self.m_clients['sso-admin'].get_inline_policy_for_permission_set( \
+                        InstanceArn=instance, PermissionSetArn=arn)
+                    tags = self.m_clients['sso-admin'].list_tags_for_resource(\
+                        InstanceArn=instance, ResourceArn=arn)
+                    data = desc['PermissionSet']
+                    data['InlinePolicy'] = policy['InlinePolicy']
+                    data['Tags'] = tags['Tags']
+                    del data['CreatedDate']
+                    result.append(data)
+                if 'NextToken' in response  : marker = response['NextToken']
+                else                        : shall_continue = False
 
-        logger.info(dumps(result))
+            logger.info(dumps(result))
 
         return result
 
@@ -94,13 +77,15 @@ class SSOTools :
 
         result = []
 
-        shall_continue = True
-        marker = None
-        while shall_continue :
-            if marker is not None   : response = self.m_client.list_instances(NextToken = marker)
-            else                    : response = self.m_client.list_instances()
-            result = result + response['Instances']
-            if 'NextToken' in response  : marker = response['NextToken']
-            else                        : shall_continue = False
+        if self.m_is_active['sso-admin'] :
+            shall_continue = True
+            marker = None
+            while shall_continue :
+                if marker is not None   : response = self.m_clients['sso-admin'].list_instances(\
+                    NextToken = marker)
+                else                    : response = self.m_clients['sso-admin'].list_instances()
+                result = result + response['Instances']
+                if 'NextToken' in response  : marker = response['NextToken']
+                else                        : shall_continue = False
 
         return result

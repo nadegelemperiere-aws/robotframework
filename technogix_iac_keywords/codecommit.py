@@ -13,6 +13,7 @@
 # System includes
 from sys import path as syspath
 from os import path
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -24,7 +25,7 @@ syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.codecommit   import CodecommitTools
 
 # Global variable
-CODECOMMIT_TOOLS    = CodecommitTools()
+CODECOMMIT_TOOLS     = CodecommitTools()
 
 @keyword("Initialize Codecommit")
 def intialize_codecommit(profile = None, access_key = None, secret_key = None, region = None) :
@@ -72,3 +73,18 @@ def remove_repository(repository) :
         repository (str) : Repository to remove
     """
     CODECOMMIT_TOOLS.remove_repository_if_exists(repository)
+
+@keyword('No Codecommit Repository In Regions')
+def no_repository_in_regions(regions, access_key, secret_key) :
+    """ Check that no resource exists in provided regions
+        ---
+        resions    (list) : List of regions not allowed for hosting
+        access_key (str)  : Access key for IAM users authentication in aws
+        secret_key (str)  : Secret key associated to the previous access key
+    """
+    local_tools = CodecommitTools()
+    for region in regions :
+        local_tools.initialize(None, access_key, secret_key, region = region)
+        repos = local_tools.list_repositories()
+        if len(repos) != 0 : raise Exception('Found codecommit repository ' + dumps(repos[0]) + \
+            ' in region ' + region)

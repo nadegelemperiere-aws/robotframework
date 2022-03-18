@@ -4,10 +4,10 @@
 # Copyright (c) [2022] Technogix SARL
 # All rights reserved
 # -------------------------------------------------------
-# Tool functions used by analyzer keywords
+# Keywords to manage code artifact tasks
 # -------------------------------------------------------
-# Nadège LEMPERIERE, @17 october 2021
-# Latest revision: 17 october 2021
+# Nadège LEMPERIERE, @05 october 2021
+# Latest revision: 05 october 2021
 # --------------------------------------------------- """
 
 # System includes
@@ -18,24 +18,22 @@ from os import path
 syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tool import Tool
 
-class AnalyzerTools(Tool) :
-    """ Class providing tools to check AWS access analyzer compliance """
+class CodeartifactTools(Tool) :
+    """ Class providing tools to check AWS codeartifact compliance """
 
     def __init__(self):
         """ Constructor """
         super().__init__()
-        self.m_services.append('accessanalyzer')
+        self.m_services.append('codeartifact')
 
-    def list_analyzers(self) :
-        """ List all active analyzers """
-
+    def list_repositories(self) :
+        """ List all code artifact repositories """
         result = []
 
-        if self.m_is_active['accessanalyzer'] :
-            paginator = self.m_clients['accessanalyzer'].get_paginator('list_analyzers')
+        if self.m_is_active['codeartifact'] :
+            paginator = self.m_clients['codeartifact'].get_paginator('list_repositories')
             response_iterator = paginator.paginate()
             for response in response_iterator :
-                for analyzer in response['analyzers'] :
-                    if analyzer['status'] == 'ACTIVE' : result.append(analyzer)
+                result = result + response['repositories']
 
         return result
