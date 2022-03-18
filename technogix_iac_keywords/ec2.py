@@ -42,6 +42,18 @@ def intialize_ec2(profile = None, access_key = None, secret_key = None, region =
     EC2_TOOLS.initialize(profile, access_key, secret_key, region=region)
     logger.info('Initialization performed')
 
+@keyword('Get All Other Regions')
+def get_all_regions(regions = None) :
+    """ Retrieve all existing AWS regions other than the input one """
+
+    result = []
+    all_regions = EC2_TOOLS.list_regions()
+    for region in all_regions :
+        if regions is None or not region['RegionName'] in regions :
+            result.append(region['RegionName'])
+
+    return result
+
 @keyword('EC2 Volumes Shall Be Encrypted')
 def ec2_volumes_encrypted() :
     """ Tests if EC2 volumes are encrypted """
@@ -58,23 +70,20 @@ def vpc_flow_logs_shall_be_active() :
         if 'DeliverLogsStatus' not in flow or flow['DeliverLogsStatus'] != 'SUCCESS' :
             raise Exception('Flow ' + flow['FlowLogId'] + ' does not deliver logs')
 
-@keyword('No Resources In Regions Other Than')
-def no_resources_in_regions_other_than(regions, access_key, secret_key) :
+@keyword('No VPC In Regions')
+def no_vpc_in_regions(regions, access_key, secret_key) :
     """ Check that no resource exists in regions other than the ones provided
         ---
-        resions    (list) : List of regions allowed for hosting
+        resions    (list) : List of regions not allowed for hosting
         access_key (str)  : Access key for IAM users authentication in aws
         secret_key (str)  : Secret key associated to the previous access key
     """
-    result = EC2_TOOLS.list_regions()
-    logger.info(dumps(regions))
     local_tools = EC2Tools()
-    for region in result :
-        if not region['RegionName'] in regions :
-            local_tools.initialize(None, access_key, secret_key, region = region['RegionName'])
-            vpcs = local_tools.list_vpcs()
-            if len(vpcs) != 0 : raise Exception('Found vpc ' + vpcs[0] + \
-                ' in region ' + region['RegionName'])
+    for region in regions :
+        local_tools.initialize(None, access_key, secret_key, region = region)
+        vpcs = local_tools.list_vpcs()
+        if len(vpcs) != 0 : raise Exception('Found vpc ' + dumps(vpcs[0]) + \
+            ' in region ' + region)
 
 @keyword('NACL Shall Not Permit Administration Access From Internet')
 def nacl_shall_not_permit_administration_access_from_internet() :
@@ -116,7 +125,14 @@ def peering_network_routes_shall_be_specific() :
     for table in result :
         logger.info(dumps(table))
         for route in table['Routes'] :
-            if route['GatewayId'][0:2] == 'pcx' :
+            if 'gatewayId' in route and \
+                route['GatewayId'][0:2] == 'pcx' :
+                #If peering route
+                if route['DestinationCidrBlock'] != '' :
+                    name = route['DestinationCidrBlock']
+                    raise Exception('Invalid peering route destination for route ' + name)
+            elif    'EgressOnlyInternetGatewayId' in route and \
+                    route['EgressOnlyInternetGatewayId'][0:2] == 'pcx' :
                 #If peering route
                 if route['DestinationCidrBlock'] != '' :
                     name = route['DestinationCidrBlock']

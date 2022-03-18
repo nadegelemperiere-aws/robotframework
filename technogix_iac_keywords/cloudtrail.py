@@ -372,8 +372,8 @@ def are_identical_filter(filter1, filter2) :
     if len(split1_filtered) != len(split2_filtered) :
         result = False
     else :
-        for i in enumerate(split1_filtered) :
-            if split1_filtered[i] != split2_filtered[i] :
+        for i, sfilter in enumerate(split1_filtered) :
+            if sfilter != split2_filtered[i] :
                 result = False
 
 

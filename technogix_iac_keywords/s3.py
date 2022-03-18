@@ -38,6 +38,7 @@ def intialize_s3(profile = None, access_key = None, secret_key = None, region = 
         secret_key (str) : Secret key associated to the previous access key
         region     (str) : AWS region to use
     """
+    logger.debug(region)
     S3_TOOLS.initialize(profile, access_key, secret_key, region)
     logger.info("Initialization performed")
 

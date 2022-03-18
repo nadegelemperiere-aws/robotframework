@@ -13,6 +13,7 @@
 # System includes
 from sys import path as syspath
 from os import path
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -47,8 +48,9 @@ def permission_set_shall_exist_and_match(specs) :
         specs    (list) : List of specifications to consider
     """
     result = SSO_TOOLS.list_instances()
+    logger.debug(dumps(result))
     if len(result) != 1 :
-        raise Exception('2 SSO instances found')
+        raise Exception( str(len(result)) + ' SSO instances found')
     instance = result[0]['InstanceArn']
     for spec in specs :
         found = False

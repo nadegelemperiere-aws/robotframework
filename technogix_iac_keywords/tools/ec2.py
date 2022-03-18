@@ -11,54 +11,33 @@
 # --------------------------------------------------- """
 
 # System includes
+from sys import path as syspath
+from os import path
 from json import dumps
-
-# Aws includes
-from boto3 import Session
 
 # Robotframework includes
 from robot.api import logger
 ROBOT = False
 
-class EC2Tools :
-    """ Class providing tools to check AWS ec2 compliance """
+# Local include
+syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
+from tool import Tool
 
-    # EC2 session
-    m_session = None
-
-    # EC2 client
-    m_client = None
+class EC2Tools(Tool) :
+    """ Class providing tools to check AWS codecommit compliance """
 
     def __init__(self):
         """ Constructor """
-        self.m_session = None
-        self.m_client = None
-
-    def initialize(self, profile, access_key, secret_key, region = None) :
-        """ Initialize session  from credentials
-            Profile or access_key/secret_key shall be provided
-            ---
-            profile    (str) : AWS cli profile for SSO users authentication in aws
-            access_key (str) : Access key for IAM users authentication in aws
-            secret_key (str) : Secret key associated to the previous access key
-            region     (str) : AWS region to use
-        """
-
-        if profile is not None :
-            self.m_session = Session(profile_name=profile, region_name = region)
-        elif access_key is not None and secret_key is not None :
-            self.m_session = Session(aws_access_key_id=access_key, \
-                aws_secret_access_key=secret_key, region_name = region)
-        else :
-            self.m_session = Session(region_name = region)
-        self.m_client = self.m_session.client('ec2')
+        super().__init__()
+        self.m_services.append('ec2')
 
     def is_ebs_encryption_activated(self) :
         """ Test if encryption is activated on EC2 instances disks """
 
         result = False
-        response = self.m_client.get_ebs_encryption_by_default()
-        if response['EbsEncryptionByDefault'] is True : result = True
+        if self.m_is_active['ec2'] :
+            response = self.m_clients['ec2'].get_ebs_encryption_by_default()
+            if response['EbsEncryptionByDefault'] is True : result = True
 
         return result
 
@@ -97,8 +76,9 @@ class EC2Tools :
         """ List all activated regions """
 
         result = []
-        response = self.m_client.describe_regions()
-        result = response['Regions']
+        if self.m_is_active['ec2'] :
+            response = self.m_clients['ec2'].describe_regions()
+            result = response['Regions']
 
         return result
 
@@ -107,10 +87,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_vpcs')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['Vpcs']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_vpcs')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['Vpcs']
 
         return result
 
@@ -119,10 +100,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_subnets')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['Subnets']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_subnets')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['Subnets']
 
         return result
 
@@ -131,10 +113,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_flow_logs')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['FlowLogs']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_flow_logs')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['FlowLogs']
 
         return result
 
@@ -143,11 +126,12 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_instances')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            for reservation in response['Reservations'] :
-                result = result + reservation['Instances']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_instances')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                for reservation in response['Reservations'] :
+                    result = result + reservation['Instances']
 
         return result
 
@@ -156,10 +140,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_volumes')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['Volumes']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_volumes')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['Volumes']
 
         return result
 
@@ -168,10 +153,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_network_interfaces')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['NetworkInterfaces']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_network_interfaces')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['NetworkInterfaces']
 
         return result
 
@@ -181,10 +167,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_network_acls')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['NetworkAcls']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_network_acls')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['NetworkAcls']
 
         return result
 
@@ -206,10 +193,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_security_groups')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['SecurityGroups']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_security_groups')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['SecurityGroups']
 
         return result
 
@@ -218,10 +206,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_security_group_rules')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['SecurityGroupRules']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_security_group_rules')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['SecurityGroupRules']
 
         return result
 
@@ -230,10 +219,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_route_tables')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['RouteTables']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_route_tables')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['RouteTables']
 
         return result
 
@@ -242,21 +232,24 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_internet_gateways')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            for gateway in response['InternetGateways'] :
-                gateway['EgressOnly'] = False
-                result.append(gateway)
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_internet_gateways')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                for gateway in response['InternetGateways'] :
+                    gateway['EgressOnly'] = False
+                    result.append(gateway)
 
-        paginator = self.m_client.get_paginator('describe_egress_only_internet_gateways')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            for gateway in response['EgressOnlyInternetGateways'] :
-                gateway['EgressOnly'] = True
-                gateway['InternetGatewayId'] = gateway['EgressOnlyInternetGatewayId']
-                del gateway['EgressOnlyInternetGatewayId']
-                result.append(gateway)
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator(\
+                'describe_egress_only_internet_gateways')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                for gateway in response['EgressOnlyInternetGateways'] :
+                    gateway['EgressOnly'] = True
+                    gateway['InternetGatewayId'] = gateway['EgressOnlyInternetGatewayId']
+                    del gateway['EgressOnlyInternetGatewayId']
+                    result.append(gateway)
 
         return result
 
@@ -265,10 +258,11 @@ class EC2Tools :
 
         result = []
 
-        paginator = self.m_client.get_paginator('describe_vpc_endpoints')
-        response_iterator = paginator.paginate()
-        for response in response_iterator :
-            result = result + response['VpcEndpoints']
+        if self.m_is_active['ec2'] :
+            paginator = self.m_clients['ec2'].get_paginator('describe_vpc_endpoints')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['VpcEndpoints']
 
         return result
 
