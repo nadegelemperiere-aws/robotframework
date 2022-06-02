@@ -65,3 +65,18 @@ def recorders_shall_exist_and_match(specs) :
                 found = True
                 logger.info('Recorder ' + spec['name'] + ' matches recorder ' + recorder['name'])
         if not found : raise Exception('Recorder ' + spec['name'] + ' does not match')
+
+@keyword('Rules Shall Exist And Match')
+def rules_shall_exist_and_match(specs) :
+    """ Test that a rule exists that matches specifications
+    ---
+        specs    (list) : List of specifications to consider
+    """
+    result = CONFIG_TOOLS.list_rules()
+    for spec in specs :
+        found = False
+        for rule in result :
+            if compare_dictionaries(spec['data'], rule) :
+                found = True
+                logger.info('Rule ' + spec['name'] + ' matches rule ' + rule['ConfigRuleName'])
+        if not found : raise Exception('Rule ' + spec['name'] + ' does not match')

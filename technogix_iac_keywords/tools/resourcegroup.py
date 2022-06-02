@@ -25,6 +25,7 @@ class ResourceGroupTools(Tool) :
         """ Constructor """
         super().__init__()
         self.m_services.append('resource-groups')
+        self.m_services.append('resourcegroupstaggingapi')
 
     def list_groups(self) :
         """ List all resource groups """
@@ -32,7 +33,7 @@ class ResourceGroupTools(Tool) :
         result = []
 
         if self.m_is_active['resource-groups'] :
-            paginator = self.m_client.get_paginator('list_groups')
+            paginator = self.m_clients['resource-groups'].get_paginator('list_groups')
             group_iterator = paginator.paginate()
             for response in group_iterator :
                 for group in response['Groups'] :
@@ -43,5 +44,18 @@ class ResourceGroupTools(Tool) :
                         group['Resources'] = group['Resources'] + resource['Resources']
 
                     result.append(group)
+
+        return result
+
+    def list_resources(self) :
+        """ List all resources """
+
+        result = []
+
+        if self.m_is_active['resourcegroupstaggingapi'] :
+            paginator = self.m_clients['resourcegroupstaggingapi'].get_paginator('get_resources')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['ResourceTagMappingList']
 
         return result

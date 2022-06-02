@@ -44,3 +44,17 @@ class RDSTools(Tool) :
                 else                                : shall_continue = False
 
         return result
+
+
+    def list_event_subscriptions(self) :
+        """ Returns all rds alarms """
+
+        result = []
+
+        if self.m_is_active['rds'] :
+            paginator = self.m_clients['rds'].get_paginator('describe_event_subscriptions')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                result = result + response['EventSubscriptionsList']
+
+        return result

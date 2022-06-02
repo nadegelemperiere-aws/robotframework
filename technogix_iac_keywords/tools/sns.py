@@ -94,3 +94,28 @@ class SNSTools(Tool) :
                     result.append(topic)
 
         return result
+
+
+    def get_topic(self, arn) :
+        """ Return a given topic
+            ---
+            arn (str) : Identifier of topic to return
+            ---
+            returns (dict)  : Selected topic
+        """
+
+        topic = {}
+
+        if self.m_is_active['sns'] :
+            attributes = self.m_clients['sns'].get_topic_attributes(TopicArn = arn)
+            topic['Attributes'] = attributes['Attributes']
+            if 'Policy' in topic['Attributes'] :
+                topic['Attributes']['Policy'] = loads(topic['Attributes']['Policy'])
+            if 'EffectiveDeliveryPolicy' in topic['Attributes'] :
+                topic['Attributes']['EffectiveDeliveryPolicy'] = \
+                    loads(topic['Attributes']['EffectiveDeliveryPolicy'])
+            if 'DeliveryPolicy' in topic['Attributes'] :
+                topic['Attributes']['DeliveryPolicy'] = \
+                    loads(topic['Attributes']['DeliveryPolicy'])
+
+        return topic

@@ -23,7 +23,7 @@ ROBOT = False
 # Local includes
 syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.s3 import S3Tools
-from tools.compare import compare_dictionaries, remove_type_from_list
+from tools.compare import compare_dictionaries, remove_type_from_list, remove_type_from_dictionary
 
 # Global variable
 S3_TOOLS = S3Tools()
@@ -78,7 +78,7 @@ def can_get_s3_object(bucket) :
         ---
         bucket   (str) : Bucket to use
     """
-    result = S3_TOOLS.list_objects(bucket, 10)
+    result = S3_TOOLS.list_objects(bucket, 10, 'STANDARD')
     if len(result) == 0 : raise Exception("No S3 object found")
     result = S3_TOOLS.object_can_be_downloaded(bucket, result[0]['Key'])
     if not result : raise Exception("S3 object can not be downloaded")
@@ -157,6 +157,19 @@ def buckets_shall_be_encrypted(account) :
         if not S3_TOOLS.is_encrypted(bkt['Name'], account) :
             raise Exception ("Bucket " + bkt['Name'] + " is not encrypted")
 
+@keyword("Buckets Shall Use Versioning")
+def buckets_shall_use_versioning(account) :
+    """ Checks that all buckets have versioning activated
+        ---
+        account  (str) : Account to check buckets from
+    """
+    result = S3_TOOLS.list_buckets(account)
+    for bkt in result :
+        logger.info(remove_type_from_dictionary(bkt,datetime))
+        if not 'Versioning' in bkt or not 'Status' in bkt['Versioning'] or \
+            bkt['Versioning']['Status'] != 'Enabled' :
+            raise Exception('Bucket ' + bkt['Name'] + ' does not have versioning enabled')
+
 @keyword("Buckets Shall Forbid Http Access")
 def buckets_shall_forbid_http_access(account) :
     """ Checks that all buckets does not allow http access
@@ -167,6 +180,17 @@ def buckets_shall_forbid_http_access(account) :
     for bkt in result :
         if not S3_TOOLS.is_preventing_http_access(bkt['Policy']) :
             raise Exception ("Bucket " + bkt['Name'] + " allow non tls access")
+
+@keyword("Buckets Shall Forbid Unencrypted Put")
+def buckets_shall_forbid_unencrypted_put(account) :
+    """ Checks that all buckets does not allow unencrypted put
+        ---
+        account  (str) : Account to check buckets from
+    """
+    result = S3_TOOLS.list_buckets(account)
+    for bkt in result :
+        if not S3_TOOLS.is_preventing_unencrypted_put(bkt['Policy']) :
+            raise Exception ("Bucket " + bkt['Name'] + " allow non encrypted put")
 
 @keyword("Buckets Shall Enforce MFA Enabling For Deletion")
 def bucket_shall_enforce_mfa_enabling(account) :

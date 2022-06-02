@@ -41,6 +41,16 @@ def intialize_sns(profile = None, access_key = None, secret_key = None, region =
     SNS_TOOLS.initialize(profile, access_key, secret_key, region)
     logger.info("Initialization performed")
 
+@keyword('Subscription Shall Limit Allowed Users')
+def subscriptions_shall_limit_allowed_users() :
+    """ Check that subscription does not allow everyone to publish
+    """
+
+    result = SNS_TOOLS.list_topics()
+    for topic in result :
+        policy = topic['Attributes']['Policy']
+        if 'AWS' in policy and policy['AWS'] == "*" :
+            raise Exception('Topic policy enable evrybody to do an action')
 
 @keyword('Subscriptions Shall Exist And Match')
 def subscriptions_shall_exist_and_match(specs) :

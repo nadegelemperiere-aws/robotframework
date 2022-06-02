@@ -63,6 +63,26 @@ class KMSTools(Tool) :
 
         return result
 
+    def list_aliases(self) :
+        """ List all aliases """
+
+        result = []
+        if self.m_is_active['kms'] :
+            paginator = self.m_clients['kms'].get_paginator('list_aliases')
+            response_iterator = paginator.paginate()
+            for response in response_iterator :
+                for alias in response['Aliases'] :
+                    if 'TargetKeyId' in alias :
+                        details = self.m_clients['kms'].describe_key(KeyId = alias['TargetKeyId'])
+                        details = details['KeyMetadata']
+                    else :
+                        details = {}
+                    details['AliasName'] = alias['AliasName']
+                    details['AliasArn'] = alias['AliasArn']
+                    result.append(details)
+
+        return result
+
     def get_rotation(self, key) :
         """ Get rotation status for key
             ---

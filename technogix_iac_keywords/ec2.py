@@ -148,6 +148,15 @@ def subnets_shall_exist(subnets) :
         result = EC2_TOOLS.subnet_exists(subnet)
         if not result : raise Exception('Subnet ' + subnet + ' does not exist')
 
+@keyword('EC2 IAM Roles Policy Shall Be Enabled')
+def ec2_iam_roles_policy_shall_be_enabled() :
+    """ Check that EC2 instances IAM roles policy is set
+    """
+    result = EC2_TOOLS.list_instances()
+    for instance in result :
+        logger.info(dumps(instance))
+        raise Exception('Instance found : should finalize keyword')
+
 @keyword('Subnets Shall Exist And Match')
 def subnets_shall_exist_and_match(specs) :
     """ Check that a subnet exists that matches the specifications
@@ -173,6 +182,19 @@ def nacl_shall_exist(nacls) :
     for nacl in nacls :
         result = EC2_TOOLS.nacl_exists(nacl)
         if not result : raise Exception('NACL ' + nacl + ' does not exist')
+
+@keyword('Customer Images Shall Not Be Public')
+def customer_images_shall_not_be_public(accounts) :
+    """ Check that self owned images are not public
+    ---
+    accounts (list) : AWS accounts owning the images
+    """
+
+    result = EC2_TOOLS.list_images(owners=accounts)
+    for image in result :
+        if image['OwnerId'] in accounts and image['Public'] :
+            raise Exception('Image ' + image['ImageId'] + ' is public')
+
 
 @keyword('NACL Shall Exist And Match')
 def nacl_shall_exist_and_match(specs) :

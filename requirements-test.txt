@@ -1,2 +1,2 @@
-robotframework==4.1.3
-boto3==1.21.43
+robotframework==5.0.1
+boto3==1.24.1
