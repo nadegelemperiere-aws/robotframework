@@ -12,7 +12,6 @@
 
 # System includes
 from time import sleep
-from datetime import datetime, timezone
 from sys import path as syspath
 from os import path
 
