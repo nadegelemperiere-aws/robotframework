@@ -14,6 +14,7 @@
 from os import path
 from sys import path as syspath
 from datetime import datetime
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -56,3 +57,62 @@ def distribution_shall_exist_and_match(specs) :
                 found = True
                 logger.info('Distribution ' + spec['name'] + ' matches app ' + distribution['Id'])
         if not found : raise Exception('Distribution ' + spec['name'] + ' does not match')
+
+@keyword('Cloudfront Shall Connect With Origin Using TLS')
+def cloudfront_shall_connect_with_origin_using_tls(minimal):
+    """ Check that cloudfront connection to origin ensure minimal TLS version
+        ---
+        minimal    (str) : Minimal allowed version
+    """
+    result = CLOUDFRONT_TOOLS.list_distributions()
+    result = remove_type_from_list(result, datetime)
+    for distribution in result :
+        for origin in distribution['DistributionConfig']['Origins']['Items'] :
+            for protocol in origin['CustomOriginConfig']['OriginSslProtocols']['Items'] :
+                version=protocol[4:len(protocol)]
+                if float(version) < float(minimal) :
+                    raise Exception('Distribution ' + distribution['Id'] + \
+                        ' does not match the required minimal TLS version')
+
+@keyword('Cloudfront Viewer Shall Redirect Http To Https')
+def cloudfront_viewer_shall_redirect_http_to_https():
+    """ Check that cloudfront viewer redirects http to https
+    """
+    result = CLOUDFRONT_TOOLS.list_distributions()
+    result = remove_type_from_list(result, datetime)
+    for distribution in result :
+        protoc = distribution['DistributionConfig']['DefaultCacheBehavior']['ViewerProtocolPolicy']
+        if protoc not in ('redirect-to-https', 'https-only') :
+            raise Exception('Distribution ' + distribution['Id'] + \
+                ' does not redirect http to https')
+
+@keyword('Cloudfront Shall Enforce Https To Its Origin')
+def cloudfront_shall_enforce_https_to_its_origin():
+    """ Check that cloudfront traffic with its origin is https
+    """
+    result = CLOUDFRONT_TOOLS.list_distributions()
+    result = remove_type_from_list(result, datetime)
+    for distribution in result :
+        for origin in distribution['DistributionConfig']['Origins']['Items'] :
+            if origin['CustomOriginConfig']['OriginProtocolPolicy'] != 'https-only' :
+                raise Exception('Distribution ' + distribution['Id'] + \
+                    ' communicate with one of its origin without https ')
+
+
+@keyword('Cloudfront Shall Have Logging Enabled')
+def cloudfront_shall_have_logging_enabled():
+    """ Check that cloudfront distribution allows logging
+    """
+    result = CLOUDFRONT_TOOLS.list_distributions()
+    result = remove_type_from_list(result, datetime)
+    for distribution in result :
+        logger.info(dumps(distribution))
+        if not 'Logging' in distribution['DistributionConfig'] :
+            raise Exception('Distribution ' + distribution['Id'] + \
+                ' does not have logging activated')
+        if not 'Enabled' in distribution['DistributionConfig']['Logging'] :
+            raise Exception('Distribution ' + distribution['Id'] + \
+                ' does not have logging activated')
+        if not distribution['DistributionConfig']['Logging']['Enabled'] :
+            raise Exception('Distribution ' + distribution['Id'] + \
+                ' does not have logging activated')

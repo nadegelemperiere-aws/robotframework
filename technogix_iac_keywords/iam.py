@@ -14,6 +14,7 @@
 from sys import path as syspath
 from os import path
 from datetime import datetime, timezone
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -360,12 +361,18 @@ def policy_shall_have_been_attached_to_a_role(name) :
     if not found :
         raise Exception("No role found for policy " + name)
 
-@keyword("No Expired Certificates Shall Exist")
-def no_expired_certificates() :
-    """ Check that no expired certificates exist """
-    result = IAM_TOOLS.list_expired_certificates()
-    if len(result) > 0 :
-        raise Exception('Certificates ' + ','.join(result) + ' has expired and not been removed')
+@keyword("Certificates Shall Not Expire In Less Than")
+def certificates_shall_not_expire_in_less_than(days) :
+    """ Check that no certificates expires in less than
+        ---
+        days (str) : Number of days until expiration"""
+    result = IAM_TOOLS.list_certificates()
+    for cert in result :
+        delay = (cert['Expiration'] - datetime.now(timezone.utc)).seconds()
+        logger.info(delay)
+        if delay < int(days) :
+            raise Exception('Certificate ' + dumps(cert )+ ' will expire in less than ' + days + \
+                ' days')
 
 @keyword("No Policy Shall Allow Full Administrative Privilege")
 def no_full_privilege_policies() :
@@ -376,6 +383,19 @@ def no_full_privilege_policies() :
         if too_much :
             name = policy['PolicyName']
             raise Exception('Policy ' + name + ' gives full administrative privileges')
+
+@keyword("Policy Shall Allow Administrative Privilege")
+def policy_shall_allow_administrative_privilege() :
+    """ Check that no policy gives full privilege """
+    result = IAM_TOOLS.list_attached_policies()
+    found = False
+    for policy in result :
+        is_admin = IAM_TOOLS.is_giving_full_admin_privileges(policy)
+        if is_admin :
+            found = True
+    if not found :
+        raise Exception('No policy gives administrative privileges')
+
 
 @keyword('Role Shall Exist And Match')
 def role_shall_exist_and_match(specs) :

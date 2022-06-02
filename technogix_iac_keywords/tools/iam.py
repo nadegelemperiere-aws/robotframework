@@ -12,7 +12,6 @@
 
 # System includes
 from time import sleep
-from datetime import datetime, timezone
 from sys import path as syspath
 from os import path
 
@@ -300,8 +299,8 @@ class IAMTools(Tool) :
 
         return result
 
-    def list_expired_certificates(self) :
-        """" List expired certificates """
+    def list_certificates(self) :
+        """" List certificates """
 
         result = []
 
@@ -309,9 +308,7 @@ class IAMTools(Tool) :
             paginator = self.m_clients['iam'].get_paginator('list_server_certificates')
             response_iterator = paginator.paginate()
             for response in response_iterator :
-                for certificate in response['ServerCertificateMetadataList'] :
-                    delay = (certificate['Expiration'] - datetime.now(timezone.utc)).seconds()
-                    if delay < 0 : result.append(certificate['ServerCertificateName'])
+                result = result + response['ServerCertificateMetadataList']
 
         return result
 

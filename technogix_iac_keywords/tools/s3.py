@@ -149,16 +149,23 @@ class S3Tools(Tool) :
                     except Exception : log = {'LoggingEnabled' : {}}
                     if 'LoggingEnabled' in log : bkt['LoggingEnabled'] = log['LoggingEnabled']
                     else : bkt['LoggingEnabled'] =  {}
+                    try :
+                        versioning = self.m_clients['s3'].get_bucket_versioning(Bucket = name, \
+                            ExpectedBucketOwner = account)
+                        versioning = {'Status' : versioning['Status'], 'MFADelete' : versioning['MFADelete']}
+                    except Exception : versioning = {}
+                    bkt['Versioning'] = versioning
 
                     result.append(bkt)
 
         return result
 
-    def list_objects(self, bucket, number) :
+    def list_objects(self, bucket, number, storage = None) :
         """ List all objects in bucket
             ---
             bucket   (str)  : Bucket to analyze
             number   (int)  : Maximal number of object to retrieve in bucket
+            storage  (str)  : Searched objects storage class (default = None)
             ---
             returns  (list) : List of the n first bucket objects
         """
@@ -173,7 +180,10 @@ class S3Tools(Tool) :
                 if shall_continue :
                     if 'Contents' in response :
                         for obj in response['Contents'] :
-                            if len(result) < number and obj["Size"] != 0 : result.append(obj)
+                            if len(result) < number :
+                                if obj["Size"] != 0 and \
+                                    (storage is None or obj["StorageClass"] == storage) :
+                                    result.append(obj)
                             else : shall_continue = False
 
         return result
@@ -392,6 +402,56 @@ class S3Tools(Tool) :
                     result = True
 
         return result
+
+    def is_preventing_unencrypted_put(self, policy) :
+
+        """ Returns policy TLS enforcement
+            ---
+            policy  (dict) : Policy to analyze
+            ---
+            returns (bool) : True if the policy allows only https access, False otherwise
+        """
+        result1 = self.is_preventing_http_access(policy)
+
+        result2 = False
+        content = policy['Statement']
+        if isinstance(content,str) :
+            if content['Effect'] == 'Deny' :
+                if  (   'Action' in content and
+                        (   (isinstance(content['Action'],str) and
+                                (   content['Action'] == '*' or
+                                    content['Action'] == "s3:*" or
+                                    content['Action'] == "s3:PutObject")) or \
+                            (isinstance(content['Action'],list) and
+                                (   '*' in content['Action'] or
+                                    's3:*' in content['Action'] or
+                                    's3:PutObject' in content['Action'])))) and \
+                    (   'Condition' in content and
+                        'Null' in content['Condition'] and
+                        's3:x-amz-server-side-encryption' in content['Condition']['Null'] and
+                        content['Condition']['Bool']['s3:x-amz-server-side-encryption'] == 'true') :
+                    result2 = True
+        elif isinstance(content,list) :
+            for statement in content :
+                print(dumps(statement))
+                if statement['Effect'] == 'Deny' :
+                    if  (   'Action' in statement and
+                            (   (isinstance(statement['Action'],str) and
+                                    (   statement['Action'] == '*' or
+                                        statement['Action'] == "s3:*" or
+                                        statement['Action'] == "s3:PutObject")) or \
+                                (isinstance(statement['Action'],list) and
+                                    (   '*' in statement['Action'] or
+                                        's3:*' in statement['Action']or
+                                        's3:PutObject' in statement['Action'])))) and \
+                        (   'Condition' in statement and
+                            'Null' in statement['Condition'] and
+                            's3:x-amz-server-side-encryption' in statement['Condition']['Null'] and
+                            statement['Condition']['Null']['s3:x-amz-server-side-encryption'] == 'true') :
+                        result2 = True
+
+        return result1 and result2
+
 
     def is_preventing_http_access(self, policy) :
         """ Returns policy TLS enforcement

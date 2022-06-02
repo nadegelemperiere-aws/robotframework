@@ -13,6 +13,7 @@
 # System includes
 from sys import path as syspath
 from os import path
+from json import dumps
 
 # Robotframework includes
 from robot.api import logger
@@ -73,3 +74,15 @@ def resource_group_shall_not_exist_and_match(specs) :
                 logger.info('Resource group ' + spec['name'] + 'matches group ' + name)
                 raise Exception('Resource group ' + spec['name'] + ' matches group ' + name)
         if not found : logger.info('Resource group ' + spec['name'] + ' does not match')
+
+
+@keyword('Resources Shall Be Tagged')
+def resources_shall_be_tagged() :
+    """ Tests that resources are tagged """
+    result = RG_TOOLS.list_resources()
+    for rsc in result:
+        logger.info(dumps(rsc))
+        if not 'Tags' in rsc :
+            raise Exception('Resource ' + rsc['ResourceARN'] + ' does not have tags')
+        if len(rsc['Tags']) == 0 :
+            raise Exception('Resource ' + rsc['ResourceARN'] + ' does not have tags')

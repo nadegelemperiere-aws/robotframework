@@ -108,6 +108,18 @@ class EC2Tools(Tool) :
 
         return result
 
+# pylint: disable=W0102
+    def list_images(self, owners=[]) :
+        """ List existing instance images """
+
+        result = []
+        if self.m_is_active['ec2'] :
+            response = self.m_clients['ec2'].describe_images(Owners=owners)
+            result = response['Images']
+
+        return result
+# pylint: enable=W0102
+
     def list_flow_logs(self) :
         """ List existing flow logs """
 

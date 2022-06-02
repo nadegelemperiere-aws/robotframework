@@ -23,10 +23,12 @@ ROBOT = False
 # Local includes
 syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tools.cloudwatch   import CloudwatchTools
+from tools.sns          import SNSTools
 from tools.compare      import compare_dictionaries, remove_type_from_list
 
 # Global variable
-CLOUDWATCH_TOOLS    = CloudwatchTools()
+CLOUDWATCH_TOOLS        = CloudwatchTools()
+CLOUDWATCH_SNS_TOOLS    = SNSTools()
 
 @keyword("Initialize Cloudwatch")
 def intialize_cloudwatch(profile = None, access_key = None, secret_key = None, region = None) :
@@ -39,6 +41,7 @@ def intialize_cloudwatch(profile = None, access_key = None, secret_key = None, r
         region     (str) : AWS region to use
     """
     CLOUDWATCH_TOOLS.initialize(profile, access_key, secret_key, region)
+    CLOUDWATCH_SNS_TOOLS.initialize(profile, access_key, secret_key, region)
     logger.info("Initialization performed")
 
 @keyword('Loggroups Shall Exist And Match')
@@ -88,3 +91,21 @@ def alarms_shall_exist_and_match(specs) :
                 found = True
                 logger.info('Alarm ' + spec['name'] + ' matches alarm ' + alarm['AlarmName'])
         if not found : raise Exception('Alarm ' + spec['name'] + ' does not match')
+
+
+@keyword('Alarms Shall Be Notified To At Least One Person')
+def alarms_shall_be_notified_to_at_least_one_person() :
+    """ Test that each alarm has an associated subscriber
+    """
+    result = CLOUDWATCH_TOOLS.list_metric_alarms()
+    result = remove_type_from_list(result, datetime)
+    for alarm in result :
+        if not alarm['ActionsEnabled'] :
+            raise  Exception('Alarm ' + alarm['AlarmName'] + ' has no actions enabled')
+        if not 'AlarmActions' in alarm:
+            raise  Exception('Alarm ' + alarm['AlarmName'] + ' has no alarm actions enabled')
+        for action in alarm['AlarmActions'] :
+            topic = CLOUDWATCH_SNS_TOOLS.get_topic(action)
+            if int(topic['Attributes']['SubscriptionsConfirmed']) < 1 :
+                raise  Exception('Alarm ' + alarm['AlarmName'] + \
+                    ' topic have no confirmed subscription')

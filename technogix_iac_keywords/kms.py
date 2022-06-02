@@ -69,6 +69,23 @@ def key_shall_exist_and_match(specs) :
                 found = True
         if not found : raise Exception('Key ' + spec['name'] + ' does not match')
 
+
+@keyword('Aliases Shall Exist And Match')
+def aliases_shall_exist_and_match(specs) :
+    """ Check that an alias exists that matches the specifications
+        ---
+        specs    (list) : List of specifications to consider
+    """
+    result = KMS_TOOLS.list_aliases()
+    result = remove_type_from_list(result, datetime)
+    for spec in specs :
+        found = False
+        for alias in result :
+            if compare_dictionaries(spec['data'], alias) :
+                found = True
+                logger.info('Alias ' + spec['AliasName'] + ' matches aliases ' + alias['AliasName'])
+        if not found : raise Exception('Alias ' + spec['AliasName'] + ' does not match')
+
 @keyword('Enabled Key Shall Be Limited')
 def enabled_keys_shall_be_limited(maximal_number) :
     """ Check that active keys are limited

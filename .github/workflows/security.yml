@@ -30,18 +30,16 @@ jobs:
               uses: actions/checkout@master
 
             - name: Installing dependencies
-              uses: docker://technogix/terraform-python-awscli:v2.0.0
+              uses: docker://technogix/terraform-python-awscli:v2.1.0
               with:
                 args: pip install -r requirements-test.txt --target site-packages
 
             - name: Linting module
-              continue-on-error: true
-              uses: docker://technogix/terraform-python-awscli:v2.0.0
+              uses: docker://technogix/terraform-python-awscli:v2.1.0
               with:
                 args: pylint technogix_iac_keywords
 
             - name: Run Snyk to check for vulnerabilities
-              continue-on-error: true
               uses: snyk/actions/python@master
               env:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -50,8 +48,7 @@ jobs:
                 args: --sarif-file-output=snyk.sarif --file=setup.py
 
             - name: Run pip-audit to check for vulnerabilities
-              continue-on-error: true
-              uses: docker://technogix/terraform-python-awscli:v2.0.0
+              uses: docker://technogix/terraform-python-awscli:v2.1.0
               with:
                 args: pip-audit -r requirements-test.txt --format json
 

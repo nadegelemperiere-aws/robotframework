@@ -26,17 +26,17 @@ This project provides a set of robotframework keywords used to check the results
 Built With
 ----------
 
-.. image:: https://img.shields.io/static/v1?label=robotframework&message=4.1.3&color=informational
+.. image:: https://img.shields.io/static/v1?label=robotframework&message=5.0.1&color=informational
    :target: http://robotframework.org/
    :alt: Robotframework
-.. image:: https://img.shields.io/static/v1?label=boto3&message=1.21.7&color=informational
+.. image:: https://img.shields.io/static/v1?label=boto3&message=1.24.1&color=informational
    :target: https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
    :alt: Boto3
 
 Principle
 =========
 
-The keywords provided here enables to build easily a set of tests for terraform deployments and/or module. The global principle is the following :
+The keywords provided here enable to build easily a set of tests for terraform deployments and/or module. The global principle is the following :
 
 * You've got to have an infrastructure that is up and running. In case you are testing a module, the *terraform* keyword will provide tools to easily set up test infrastructure for the test and remove it once the test is done.
 
