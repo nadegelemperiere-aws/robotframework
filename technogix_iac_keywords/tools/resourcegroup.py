@@ -58,5 +58,4 @@ class ResourceGroupTools(Tool) :
             for response in response_iterator :
                 result = result + response['ResourceTagMappingList']
 
-
         return result

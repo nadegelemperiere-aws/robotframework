@@ -184,6 +184,7 @@ class S3Tools(Tool) :
                                 if obj["Size"] != 0 and \
                                     (storage is None or obj["StorageClass"] == storage) :
                                     result.append(obj)
+
                             else : shall_continue = False
 
         return result

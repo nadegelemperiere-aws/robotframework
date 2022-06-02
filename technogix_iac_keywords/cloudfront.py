@@ -58,7 +58,7 @@ def distribution_shall_exist_and_match(specs) :
                 logger.info('Distribution ' + spec['name'] + ' matches app ' + distribution['Id'])
         if not found : raise Exception('Distribution ' + spec['name'] + ' does not match')
 
-@keyword('Cloudfront Shall Connect With Origin Using TLS')
+          @keyword('Cloudfront Shall Connect With Origin Using TLS')
 def cloudfront_shall_connect_with_origin_using_tls(minimal):
     """ Check that cloudfront connection to origin ensure minimal TLS version
         ---

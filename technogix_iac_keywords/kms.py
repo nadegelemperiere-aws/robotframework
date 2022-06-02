@@ -69,7 +69,6 @@ def key_shall_exist_and_match(specs) :
                 found = True
         if not found : raise Exception('Key ' + spec['name'] + ' does not match')
 
-
 @keyword('Aliases Shall Exist And Match')
 def aliases_shall_exist_and_match(specs) :
     """ Check that an alias exists that matches the specifications
