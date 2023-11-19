@@ -1,37 +1,40 @@
 .. image:: docs/imgs/logo.png
    :alt: Logo
 
-===========================================
-Technogix terraform robotframework keywords
-===========================================
+=====================================
+aws terraform robotframework keywords
+=====================================
 
 About The Project
 =================
 
 This project provides a set of robotframework keywords used to check the results of terraform deployments.
 
-.. image:: https://badgen.net/github/checks/technogix-terraform/robotframework
-   :target: https://github.com/technogix-terraform/robotframework/actions/workflows/release.yml
+.. image:: https://badgen.net/github/checks/nadegelemperiere-aws/robotframework
+   :target: https://github.com/nadegelemperiere-aws/robotframework/actions/workflows/release.yml
    :alt: Status
 .. image:: https://img.shields.io/static/v1?label=license&message=MIT&color=informational
    :target: ./LICENSE
    :alt: License
-.. image:: https://badgen.net/github/commits/technogix-terraform/robotframework/main
-   :target: https://github.com/technogix-terraform/robotframework
+.. image:: https://badgen.net/github/commits/nadegelemperiere-aws/robotframework/main
+   :target: https://github.com/nadegelemperiere-aws/robotframework
    :alt: Commits
-.. image:: https://badgen.net/github/last-commit/technogix-terraform/robotframework/main
-   :target: https://github.com/technogix-terraform/robotframework
+.. image:: https://badgen.net/github/last-commit/nadegelemperiere-aws/robotframework/main
+   :target: https://github.com/nadegelemperiere-aws/robotframework
    :alt: Last commit
 
 Built With
 ----------
 
-.. image:: https://img.shields.io/static/v1?label=robotframework&message=5.0.1&color=informational
+.. image:: https://img.shields.io/static/v1?label=robotframework&message=6.1.1&color=informational
    :target: http://robotframework.org/
    :alt: Robotframework
-.. image:: https://img.shields.io/static/v1?label=boto3&message=1.24.1&color=informational
+.. image:: https://img.shields.io/static/v1?label=boto3&message=1.29.3&color=informational
    :target: https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
    :alt: Boto3
+.. image:: https://img.shields.io/static/v1?label=python&message=3.12.0&color=informational
+   :target: https://https://www.python.org/
+   :alt: Python
 
 Principle
 =========
@@ -72,9 +75,9 @@ Load the required keywords in the test case :
 .. code:: robotframework
 
     *** Settings ***
-    Library         technogix_iac_keywords.terraform
-    Library         technogix_iac_keywords.keepass
-    Library         technogix_iac_keywords.<keyword>
+    Library         aws_iac_keywords.terraform
+    Library         aws_iac_keywords.keepass
+    Library         aws_iac_keywords.<keyword>
     # Load other keywords, for example the one provided your expected infrastructure description
     Library         ./data.py
 
@@ -152,11 +155,11 @@ Organization
 Issues
 ======
 
-.. image:: https://img.shields.io/github/issues/technogix-terraform/robotframework.svg
-   :target: https://github.com/technogix-terraform/robotframework/issues
+.. image:: https://img.shields.io/github/issues/nadegelemperiere-aws/robotframework.svg
+   :target: https://github.com/nadegelemperiere-aws/robotframework/issues
    :alt: Open issues
-.. image:: https://img.shields.io/github/issues-closed/technogix-terraform/robotframework.svg
-   :target: https://github.com/technogix-terraform/robotframework/issues
+.. image:: https://img.shields.io/github/issues-closed/nadegelemperiere-aws/robotframework.svg
+   :target: https://github.com/nadegelemperiere-aws/robotframework/issues
    :alt: Closed issues
 
 Known limitations
@@ -170,7 +173,7 @@ Roadmap
 Contributing
 ============
 
-.. image:: https://contrib.rocks/image?repo=technogix-terraform/robotframework
+.. image:: https://contrib.rocks/image?repo=nadegelemperiere-aws/robotframework
    :alt: GitHub Contributors Image
 
 We welcome contributions, do not hesitate to contact us if you want to contribute.
@@ -183,7 +186,7 @@ This code is under MIT license
 Contact
 =======
 
-Technogix - contact.technogix@gmail.com
+Nadege Lemperiere - nadege.lemperiere@gmail.com
 
 Acknowledgments
 ===============
