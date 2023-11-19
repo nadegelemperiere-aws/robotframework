@@ -43,7 +43,7 @@ jobs:
               uses: snyk/actions/python@master
               env:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-                PYTHONPATH: /github/workspace/site-packages
+                PYTHONPATH: $GITHUB_WORKSPACE/site-packages
               with:
                 args: --sarif-file-output=snyk.sarif --file=setup.py
 

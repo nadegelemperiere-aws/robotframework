@@ -21,7 +21,7 @@ ROBOT = False
 syspath.append(path.normpath(path.join(path.dirname(__file__), './')))
 from tool import Tool
 
-# pylint: disable=R0916, R0201, R0912, R0915, C0301, R1702
+# pylint: disable=R0916, R0912, R0915, C0301, R1702
 class S3Tools(Tool) :
     """ Class providing tools to check AWS S3 compliance """
 
@@ -543,4 +543,4 @@ class S3Tools(Tool) :
 
         return result
 
-# pylint: enable=R0916, R0201, R0912, R0915, C0301, R1702
+# pylint: enable=R0916, R0912, R0915, C0301, R1702

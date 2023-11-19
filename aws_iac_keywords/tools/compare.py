@@ -43,7 +43,7 @@ def compare_dictionaries(spec, test) :
                     key_result = compare_dictionaries(spec[key], test[key])
                 elif isinstance(spec[key], list) :
                     key_result = compare_list(spec[key], test[key])
-                else : key_result = (spec[key] == test[key])
+                else : key_result = spec[key] == test[key]
 
                 if not key_result : logger.debug('Key ' + key + ' does not match')
                 result = result and key_result

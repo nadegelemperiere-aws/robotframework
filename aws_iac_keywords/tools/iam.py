@@ -130,7 +130,7 @@ class IAMTools(Tool) :
         try :
             if self.m_is_active['iam'] :
                 profile = self.m_clients['iam'].get_login_profile( UserName=username)
-                result = (profile['CreateDate'] is not None)
+                result = profile['CreateDate'] is not None
         except self.m_clients['iam'].exceptions.NoSuchEntityException : result = False
 
         return result

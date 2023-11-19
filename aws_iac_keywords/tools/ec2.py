@@ -277,7 +277,7 @@ class EC2Tools(Tool) :
         return result
 
 
-# pylint: disable=R0201, R1716
+# pylint: disable=R1716
     def nacl_allow_remote_administration_access(self, entry) :
         """ Check if an access control list entry allow administration access
             ---
@@ -330,4 +330,4 @@ class EC2Tools(Tool) :
             result = True
 
         return result
-# pylint: enable=R0201, R1716
+# pylint: enable=R1716

@@ -17,7 +17,7 @@ from subprocess import Popen, PIPE
 from robot.api import logger
 ROBOT = False
 
-# pylint: disable=R1732, R0201, W0102
+# pylint: disable=R1732, W0102
 class TerraformTools :
     """ Class providing tools to sequence terraform deployment """
 
@@ -153,4 +153,4 @@ class TerraformTools :
 
         return result
 
-# pylint: enable=R1732, R0201, W0102
+# pylint: enable=R1732, W0102
