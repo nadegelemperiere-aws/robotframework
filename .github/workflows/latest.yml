@@ -28,13 +28,13 @@ jobs:
               uses: actions/checkout@master
 
             - name: Installing dependencies
-              uses: docker://nadegelemperiere-docker/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:latest
               with:
                 args: pip install -r requirements-test.txt --target site-packages
 
             - name: Linting module
               continue-on-error: true
-              uses: docker://nadegelemperiere-docker/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:latest
               with:
                 args: pylint aws_iac_keywords
 
@@ -49,7 +49,7 @@ jobs:
 
             - name: Run pip-audit to check for vulnerabilities
               continue-on-error: true
-              uses: docker://nadegelemperiere-docker/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:latest
               with:
                 args: pip-audit -r requirements-test.txt --format json
 
