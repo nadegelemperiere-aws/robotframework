@@ -1,0 +1,7 @@
+version: v1.0.0
+ignore:
+  SNYK-PYTHON-CRYPTOGRAPHY-6050294:
+    - 'poetry@1.7.1 > keyring@24.3.0 > secretstorage@3.3.3 > cryptography@41.0.5':
+        reason: No update available for poetry and ddos vulnerability does not impact the code since not in production
+        expires: 2030-11-19T00:00:00.000Z
+        created: 2023-11-19T00:00:00.000Z
