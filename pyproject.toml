@@ -1,0 +1,42 @@
+
+[tool.poetry]
+name = "aws_iac_keywords"
+description = "A set of robotframework keywords to test AWS infrastructure deployment by terraform"
+authors = [ "Nadège Lemperiere <nadege.lemperiere@gmail.com>" ]
+license = "MIT"
+version = "0.0.0"
+readme = "README.rst"
+packages = [{include = "aws_iac_keywords"}]
+repository = "https://github.com/nadegelemperiere-aws/robotframework/"
+documentation = "https://nadegelemperiere-aws.github.io/robotframework/"
+classifiers = [
+    "Programming Language :: Python",
+    "Intended Audience :: Testers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: MIT License"
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+robotframework ="^6.1.1"
+boto3 = "^1.29.3"
+poetry = { version = "^1.7.1", optional = true }
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry.extras]
+plugin = ["poetry"]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/nadegelemperiere-aws/robotframework//issues"
+
+[build-system]
+requires = [
+    "poetry-core>=1.7.1",
+    "poetry-dynamic-versioning>=1.1.1"
+]
+build-backend = "poetry.core.masonry.api"
+

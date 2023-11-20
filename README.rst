@@ -127,7 +127,6 @@ Sequence tests
 
 Perform the test by deploying infrastructure, retrieve terraform test, load expected infrastructure data, compare the real infrastructure to the expected one and remove the test infrastructure
 
-
 .. code:: robotframework
 
     Test Infrastructure

@@ -28,13 +28,13 @@ jobs:
               uses: actions/checkout@master
 
             - name: Installing dependencies
-              uses: docker://nadegelemperiere/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:v3.0.0
               with:
                 args: pip install -r requirements-test.txt --target site-packages
 
             - name: Linting module
               continue-on-error: true
-              uses: docker://nadegelemperiere/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:v3.0.0
               with:
                 args: pylint aws_iac_keywords
 
@@ -45,11 +45,11 @@ jobs:
                 SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
                 PYTHONPATH: $GITHUB_WORKSPACE/site-packages
               with:
-                args: --sarif-file-output=snyk.sarif --file=setup.py --debug
+                args: --sarif-file-output=snyk.sarif --debug
 
             - name: Run pip-audit to check for vulnerabilities
               continue-on-error: true
-              uses: docker://nadegelemperiere/terraform-python-awscli:latest
+              uses: docker://nadegelemperiere/terraform-python-awscli:v3.0.0
               with:
                 args: pip-audit -r requirements-test.txt --format json
 

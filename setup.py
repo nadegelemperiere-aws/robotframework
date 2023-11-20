@@ -4,8 +4,8 @@
 # -------------------------------------------------------
 # Robotframework module setup file
 # -------------------------------------------------------
-# Nadège LEMPERIERE, @17 october 2021
-# Latest revision: 17 october 2021
+# Nadège LEMPERIERE, @17 october 2022
+# Latest revision: 19 november 2023
 # --------------------------------------------------- """
 
 from setuptools import setup, find_packages
@@ -20,7 +20,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=['robotframework>=6.1.1','boto3>=1.29.3'],
-    python_requires=">3.6",
+    python_requires=">3.12",
     classifiers=[
         'Programming Language :: Python',
         'Intended Audience :: Testers',
