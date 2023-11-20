@@ -5,11 +5,12 @@
 # Keywords to load deployment state from terraform state
 # -------------------------------------------------------
 # Nadège LEMPERIERE, @05 october 2021
-# Latest revision: 05 october 2021
+# Latest revision: 20 november 2023
 # --------------------------------------------------- """
 
 # System includes
 from os import path, remove
+from json import dumps
 from shutil import rmtree
 from subprocess import Popen, PIPE
 
@@ -142,13 +143,14 @@ class TerraformTools :
             other_parameters = other_parameters + ' -var="' + key + '=' + variables[key] + '"'
 
         cmd = \
-            'terraform destroy -no-color -input=false -auto-approve -var="region=' + \
+            'terraform destroy -parallelism=1 -no-color -input=false -auto-approve -var="region=' + \
             self.m_region + '" -var="access_key=' + self.m_access_key + '" -var="secret_key=' + \
             self.m_secret_key + '"' + other_parameters
         logger.info(cmd)
         process = Popen(cmd , cwd=directory, stdout=PIPE, shell=True)
         (output) = process.communicate()
         logger.info(output)
+        logger.debug(process)
         if process.returncode > 0 : result = False
 
         return result

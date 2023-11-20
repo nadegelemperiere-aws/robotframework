@@ -5,7 +5,7 @@
 # Keywords to manage SSO tasks
 # -------------------------------------------------------
 # Nadège LEMPERIERE, @05 october 2021
-# Latest revision: 05 october 2021
+# Latest revision: 20 november 2023
 # --------------------------------------------------- """
 
 
@@ -82,6 +82,8 @@ class SSOTools(Tool) :
                 if marker is not None   : response = self.m_clients['sso-admin'].list_instances(\
                     NextToken = marker)
                 else                    : response = self.m_clients['sso-admin'].list_instances()
+                for data in response['Instances'] :
+                    del data['CreatedDate']
                 result = result + response['Instances']
                 if 'NextToken' in response  : marker = response['NextToken']
                 else                        : shall_continue = False
