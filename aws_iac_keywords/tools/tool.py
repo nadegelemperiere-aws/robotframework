@@ -21,27 +21,15 @@ ROBOT = False
 class Tool :
     """ Class providing tools to check AWS account compliance """
 
-    # Session
-    m_session = None
-
-    # Services
-    m_services = []
-
-    # Services clients
-    m_clients = {}
-
-    # Are services active
-    m_is_active = {}
-
     # Is service global
-    m_is_global = False
 
     def __init__(self):
         """ Constructor """
         self.m_session = None
-        self.m_client = {}
-        self.m_is_service_active = {}
+        self.m_clients = {}
+        self.m_is_active = {}
         self.m_services = []
+        m_is_global = False
 
     def initialize(self, profile, access_key, secret_key, region) :
         """ Initialize session  from credentials
