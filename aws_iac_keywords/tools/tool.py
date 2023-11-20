@@ -25,11 +25,11 @@ class Tool :
 
     def __init__(self):
         """ Constructor """
-        self.m_session = None
-        self.m_clients = {}
+        self.m_session   = None
+        self.m_clients   = {}
         self.m_is_active = {}
-        self.m_services = []
-        m_is_global = False
+        self.m_services  = []
+        self.m_is_global = False
 
     def initialize(self, profile, access_key, secret_key, region) :
         """ Initialize session  from credentials
