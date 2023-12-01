@@ -36,7 +36,8 @@ class ResourceGroupTools(Tool) :
             for response in group_iterator :
                 for group in response['Groups'] :
                     group['Resources'] = []
-                    paginator2 = self.m_clients['resource-groups'].get_paginator('list_group_resources')
+                    paginator2 = \
+                        self.m_clients['resource-groups'].get_paginator('list_group_resources')
                     resource_iterator = paginator2.paginate(Group = group['GroupArn'])
                     for resource in resource_iterator :
                         group['Resources'] = group['Resources'] + resource['Resources']

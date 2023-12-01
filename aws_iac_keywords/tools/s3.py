@@ -90,6 +90,7 @@ class S3Tools(Tool) :
         if self.m_is_active['s3'] :
             self.m_clients['s3'].delete_bucket(Bucket=bucket)
 
+# pylint: disable=R0914
     def list_buckets(self, account) :
         """ List all buckets in that are accessible in environment
             ---
@@ -108,6 +109,14 @@ class S3Tools(Tool) :
                     is_accessible = self.m_clients['s3'].head_bucket(Bucket=name)
                 except Exception : is_accessible = False
                 if is_accessible :
+                    try :
+                        ownership = self.m_clients['s3'].get_bucket_ownership_controls(Bucket=name)
+                    except Exception : ownership = {'OwnershipControls' : {'Rules' : []}}
+                    bkt['Ownership'] = ownership['OwnershipControls']['Rules']
+                    try :
+                        lock = self.m_clients['s3'].get_object_lock_configuration(Bucket=name)
+                    except Exception : lock = {'ObjectLockConfiguration' : {}}
+                    bkt['Lock'] = lock['ObjectLockConfiguration']
                     try :
                         lifecycle = self.m_clients['s3'].get_bucket_lifecycle_configuration(Bucket=name)
                     except Exception : lifecycle = {'Rules' : []}
@@ -157,6 +166,7 @@ class S3Tools(Tool) :
                     result.append(bkt)
 
         return result
+    # pylint: enable=R0914
 
     def list_objects(self, bucket, number, storage = None) :
         """ List all objects in bucket

@@ -9,9 +9,8 @@
 # --------------------------------------------------- """
 
 # System includes
-from os import path, remove
-from json import dumps
-from shutil import rmtree
+from os         import path, remove
+from shutil     import rmtree
 from subprocess import Popen, PIPE
 
 # Robotframework includes
@@ -143,9 +142,9 @@ class TerraformTools :
             other_parameters = other_parameters + ' -var="' + key + '=' + variables[key] + '"'
 
         cmd = \
-            'terraform destroy -parallelism=1 -no-color -input=false -auto-approve -var="region=' + \
-            self.m_region + '" -var="access_key=' + self.m_access_key + '" -var="secret_key=' + \
-            self.m_secret_key + '"' + other_parameters
+            'terraform destroy -parallelism=1 -no-color -input=false -auto-approve -var=' + \
+            '"region=' + self.m_region + '" -var="access_key=' + self.m_access_key + '" -var=' + \
+            '"secret_key=' + self.m_secret_key + '"' + other_parameters
         logger.info(cmd)
         process = Popen(cmd , cwd=directory, stdout=PIPE, shell=True)
         (output) = process.communicate()
